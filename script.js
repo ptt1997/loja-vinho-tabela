@@ -1,96 +1,50 @@
-// Configurações globais
+// Configurações
 const CONFIG = {
   URL_API: 'https://script.google.com/macros/s/AKfycbxOVVlXhECClvMU2gkOI0HF5NutWibycWi5mN7hEpOU8K100MQbN2uweEpxFb1X_jNgQg/exec',
   WHATSAPP: '5546920001218'
 };
 
-// Sistema de armazenamento seguro
-const safeStorage = {
-  get: (key) => {
-    try {
-      return JSON.parse(localStorage.getItem(key));
-    } catch {
-      return null;
-    }
-  },
-  set: (key, value) => {
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
-      return true;
-    } catch {
-      return false;
-    }
-  }
-};
-
 // Estado global
-let carrinho = safeStorage.get('carrinho') || [];
+let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
 
-// Elementos DOM
-const DOM = {
-  corpoTabela: document.getElementById('corpo-tabela'),
-  carrinhoItens: document.getElementById('itens-carrinho'),
-  total: document.getElementById('total'),
-  carrinhoIcone: document.getElementById('carrinho-icone'),
-  carrinhoPainel: document.getElementById('carrinho-painel'),
-  carrinhoContador: document.getElementById('carrinho-contador'),
-  modal: document.getElementById('modal'),
-  imgModal: document.getElementById('imagem-modal'),
-  finalizarBtn: document.getElementById('finalizar')
-};
-
-// Função para carregar dados da planilha
-async function carregarDados() {
+// Função para carregar vinhos
+async function carregarVinhos() {
   try {
-    const response = await fetch(`${CONFIG.URL_API}?t=${Date.now()}`, {
-      redirect: 'follow',
-      headers: { 'Content-Type': 'application/json' }
-    });
-
-    if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+    const response = await fetch(CONFIG.URL_API);
+    if (!response.ok) throw new Error('Erro ao carregar dados');
     
-    const dados = await response.json();
+    const data = await response.json();
     
-    // Verificação dos dados
-    if (!Array.isArray(dados)) throw new Error("Formato de dados inválido");
+    // Verifica se os dados são válidos
+    if (!Array.isArray(data)) throw new Error('Formato de dados inválido');
     
-    // Filtra linhas vazias
-    return dados.filter(item => 
-      item['Nome do Vinho'] && 
-      item['Preço'] !== undefined
+    return data.filter(vinho => 
+      vinho['Nome do Vinho'] && 
+      vinho['Preço'] !== undefined
     );
     
-  } catch (erro) {
-    console.error("Falha ao carregar dados:", erro);
+  } catch (error) {
+    console.error("Falha ao carregar dados:", error);
     
     // Fallback com dados de exemplo
     return [
       {
         "Nome do Vinho": "Vinho Reserva",
-        "Descrição": "Exemplo carregado localmente",
+        "Descrição": "Exemplo - conexão falhou",
         "Preço": 89.90,
-        "Marca": "Vinícola Fallback",
+        "Marca": "Fallback",
         "Link Imagem": "https://via.placeholder.com/150"
       }
     ];
   }
 }
 
-// Função para escapar strings
-function escapeString(str) {
-  return str.replace(/'/g, "\\'").replace(/"/g, '\\"');
-}
-
-// Renderiza a tabela de vinhos
-function renderizarTabela(dados) {
-  if (!DOM.corpoTabela) {
-    console.error("Elemento 'corpo-tabela' não encontrado");
-    return;
-  }
-
-  DOM.corpoTabela.innerHTML = '';
-
-  dados.forEach(vinho => {
+// Função para exibir vinhos na tabela
+function exibirVinhos(vinhos) {
+  const tbody = document.getElementById('corpo-tabela');
+  tbody.innerHTML = '';
+  
+  vinhos.forEach(vinho => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td><span class="icone-imagem" onclick="abrirModal('${vinho['Link Imagem']}')">📷</span></td>
@@ -99,184 +53,42 @@ function renderizarTabela(dados) {
       <td>R$${vinho['Preço'].toFixed(2)}</td>
       <td>
         <input type="number" min="1" value="1" class="quantidade">
-        <button onclick="adicionarAoCarrinho('${escapeString(vinho['Nome do Vinho'])}', ${vinho['Preço']}, this.previousElementSibling.value)">
+        <button onclick="adicionarAoCarrinho('${vinho['Nome do Vinho'].replace(/'/g, "\\'")}', ${vinho['Preço']}, this.previousElementSibling.value)">
           Adicionar
         </button>
       </td>
     `;
-    DOM.corpoTabela.appendChild(tr);
+    tbody.appendChild(tr);
   });
 }
 
-// Funções do Carrinho
+// Funções do carrinho (mantenha as que você já tem)
 function adicionarAoCarrinho(nome, preco, quantidade) {
-  quantidade = parseInt(quantidade) || 1;
-  preco = parseFloat(preco);
-  
-  const itemExistente = carrinho.find(item => item.nome === nome);
-  
-  if (itemExistente) {
-    itemExistente.quantidade += quantidade;
-  } else {
-    carrinho.push({
-      nome: nome,
-      preco: preco,
-      quantidade: quantidade
-    });
-  }
-  
-  atualizarCarrinho();
-  toggleCarrinho(true);
-}
-
-function removerItem(nome) {
-  carrinho = carrinho.filter(item => item.nome !== nome);
-  atualizarCarrinho();
-}
-
-function alterarQuantidade(nome, delta) {
-  const item = carrinho.find(item => item.nome === nome);
-  if (item) {
-    item.quantidade += delta;
-    if (item.quantidade < 1) item.quantidade = 1;
-    atualizarCarrinho();
-  }
+  // ... (seu código existente)
 }
 
 function atualizarCarrinho() {
-  if (!DOM.carrinhoItens || !DOM.total) return;
-
-  DOM.carrinhoItens.innerHTML = '';
-  let total = 0;
-  
-  carrinho.forEach(item => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${item.nome}</td>
-      <td>
-        <button onclick="alterarQuantidade('${escapeString(item.nome)}', -1)">-</button>
-        ${item.quantidade}
-        <button onclick="alterarQuantidade('${escapeString(item.nome)}', 1)">+</button>
-      </td>
-      <td>R$${(item.preco * item.quantidade).toFixed(2)}</td>
-      <td><button onclick="removerItem('${escapeString(item.nome)}')">❌</button></td>
-    `;
-    DOM.carrinhoItens.appendChild(tr);
-    total += item.preco * item.quantidade;
-  });
-  
-  DOM.total.textContent = `Total: R$${total.toFixed(2)}`;
-  safeStorage.set('carrinho', carrinho);
-  atualizarContador();
-}
-
-// Controle do carrinho flutuante
-function toggleCarrinho(abrir) {
-  if (!DOM.carrinhoPainel) return;
-  
-  if (abrir) {
-    DOM.carrinhoPainel.classList.add('ativo');
-  } else {
-    DOM.carrinhoPainel.classList.toggle('ativo');
-  }
-}
-
-function atualizarContador() {
-  if (!DOM.carrinhoContador) return;
-  
-  const totalItens = carrinho.reduce((total, item) => total + item.quantidade, 0);
-  DOM.carrinhoContador.textContent = totalItens;
-  DOM.carrinhoContador.style.display = totalItens > 0 ? 'flex' : 'none';
-}
-
-// Modal de imagens
-function abrirModal(url) {
-  if (!DOM.imgModal || !DOM.modal) return;
-  
-  DOM.imgModal.src = url;
-  DOM.modal.style.display = 'block';
-}
-
-function fecharModal() {
-  if (!DOM.modal) return;
-  DOM.modal.style.display = 'none';
-}
-
-// Finalizar pedido via WhatsApp
-function finalizarPedido() {
-  if (carrinho.length === 0) {
-    alert("Seu carrinho está vazio!");
-    return;
-  }
-  
-  let mensagem = "🍷 *PEDIDO DE VINHOS* 🍷\n\n";
-  carrinho.forEach(item => {
-    mensagem += `✔ ${item.nome}\n`;
-    mensagem += `   ${item.quantidade}x R$${item.preco.toFixed(2)} = R$${(item.preco * item.quantidade).toFixed(2)}\n\n`;
-  });
-  
-  mensagem += `💰 *TOTAL: R$${carrinho.reduce((total, item) => total + (item.preco * item.quantidade), 0).toFixed(2)}*`;
-  
-  window.open(`https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(mensagem)}`, '_blank');
-  
-  // Limpa o carrinho
-  carrinho = [];
-  atualizarCarrinho();
-  toggleCarrinho(false);
-}
-
-// Event Listeners
-function setupEventListeners() {
-  // Fechar carrinho ao clicar fora
-  document.addEventListener('click', (e) => {
-    if (!DOM.carrinhoPainel?.contains(e.target) && 
-        e.target !== DOM.carrinhoIcone && 
-        !DOM.carrinhoIcone?.contains(e.target)) {
-      DOM.carrinhoPainel?.classList.remove('ativo');
-    }
-  });
-
-  // Botões principais
-  if (DOM.finalizarBtn) DOM.finalizarBtn.addEventListener('click', finalizarPedido);
-  if (DOM.carrinhoIcone) DOM.carrinhoIcone.addEventListener('click', () => toggleCarrinho());
-  
-  // Modal
-  const fecharModalBtn = document.querySelector('.fechar-modal');
-  if (fecharModalBtn) fecharModalBtn.addEventListener('click', fecharModal);
-  if (DOM.modal) DOM.modal.addEventListener('click', (e) => {
-    if (e.target === DOM.modal) fecharModal();
-  });
+  // ... (seu código existente)
 }
 
 // Inicialização
-async function init() {
+document.addEventListener('DOMContentLoaded', async () => {
   try {
-    const dados = await carregarDados();
-    renderizarTabela(dados);
+    const vinhos = await carregarVinhos();
+    exibirVinhos(vinhos);
     
     if (carrinho.length > 0) {
       atualizarCarrinho();
     }
     
-    setupEventListeners();
-    
-  } catch (erro) {
-    console.error("Erro na inicialização:", erro);
-    if (DOM.corpoTabela) {
-      DOM.corpoTabela.innerHTML = `
-        <tr>
-          <td colspan="5" style="color:red; text-align:center;">
-            Erro ao carregar dados. Recarregue a página.
-          </td>
-        </tr>
-      `;
-    }
+  } catch (error) {
+    console.error("Erro na inicialização:", error);
+    document.getElementById('corpo-tabela').innerHTML = `
+      <tr>
+        <td colspan="5" style="color:red;text-align:center;">
+          Erro ao carregar dados. Recarregue a página.
+        </td>
+      </tr>
+    `;
   }
-}
-
-// Inicia quando o DOM estiver pronto
-if (document.readyState !== 'loading') {
-  init();
-} else {
-  document.addEventListener('DOMContentLoaded', init);
-}
+});
