@@ -1,0 +1,242 @@
+<div id="carrinho">
+  <h2>Carrinho de Compras</h2>
+  <div id="carrinho-container"></div>
+  <div id="total-pedido">Total: R$0.00</div>
+  <button onclick="finalizarPedido()">Finalizar Pedido</button>
+</div>
+function finalizarPedido() {
+  if (carrinho.length === 0) {
+    alert('Seu carrinho está vazio!');
+    return;
+  }
+  
+  // Formatar mensagem do pedido
+  let mensagem = 'Pedido feito por tabela:\n\n';
+  
+  carrinho.forEach(item => {
+    mensagem += `${item.nome} - ${item.quantidade}x R$${item.preco.toFixed(2)}\n`;
+  });
+  
+  mensagem += `\nTotal: R$${totalPedido.toFixed(2)}`;
+  
+  // Codificar para URL do WhatsApp
+  const mensagemCodificada = encodeURIComponent(mensagem);
+  const numeroWhatsApp = '5546920001218';
+  const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${mensagemCodificada}`;
+  
+  // Abrir WhatsApp
+  window.open(urlWhatsApp, '_blank');
+  
+  // Limpar carrinho (opcional)
+  carrinho = [];
+  atualizarCarrinho();
+  totalPedido = 0;
+  atualizarTotal();
+}
+function exibirVinhos(vinhos) {
+  const container = document.getElementById('vinhos-container');
+  container.innerHTML = '';
+  
+  vinhos.forEach(vinho => {
+    const card = document.createElement('div');
+    card.className = 'vinho-card';
+    
+    card.innerHTML = `
+      <img src="${vinho['Link Imagem']}" alt="${vinho['Nome do Vinho']}">
+      <h3>${vinho['Nome do Vinho']}</h3>
+      <p>${vinho['Descrição']}</p>
+      <p><strong>Marca:</strong> ${vinho['Marca']}</p>
+      <p><strong>Preço:</strong> R$${vinho['Preço'].toFixed(2)}</p>
+      <div class="quantidade-container">
+        <input type="number" id="quantidade-${vinho['Nome do Vinho']}" value="1" min="1">
+        <button onclick="adicionarAoCarrinho('${vinho['Nome do Vinho']}', ${vinho['Preço']}, 
+          parseInt(document.getElementById('quantidade-${vinho['Nome do Vinho']}').value))">
+          Adicionar ao Carrinho
+        </button>
+      </div>
+    `;
+    
+    container.appendChild(card);
+  });
+}
+#carrinho {
+  position: fixed;
+  right: 20px;
+  top: 20px;
+  width: 300px;
+  background: #f8f8f8;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.carrinho-item {
+  margin: 10px 0;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.carrinho-item button {
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.quantidade-container {
+  margin-top: 10px;
+}
+
+.quantidade-container input {
+  width: 50px;
+  padding: 5px;
+  margin-right: 10px;
+}
+<!-- Modal para imagens -->
+<div id="imagem-modal" class="modal">
+  <span class="fechar-modal">&times;</span>
+  <img class="modal-conteudo" id="imagem-ampliada">
+</div>
+/* Estilos para o modal de imagem */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.9);
+  text-align: center;
+}
+
+.modal-conteudo {
+  margin: auto;
+  display: block;
+  max-width: 90%;
+  max-height: 90%;
+  margin-top: 5vh;
+}
+
+.fechar-modal {
+  position: absolute;
+  top: 15px;
+  right: 35px;
+  color: white;
+  font-size: 40px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.fechar-modal:hover {
+  color: #ccc;
+}
+
+.icone-imagem {
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  margin: 10px 0;
+}
+
+.icone-imagem svg {
+  width: 30px;
+  height: 30px;
+  fill: #666;
+}
+// Variável para o modal
+const modal = document.getElementById("imagem-modal");
+const modalImg = document.getElementById("imagem-ampliada");
+const span = document.getElementsByClassName("fechar-modal")[0];
+
+// Quando clicar no X, fecha o modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+// Quando clicar fora da imagem, fecha o modal
+modal.onclick = function(event) {
+  if (event.target === modal) {
+    modal.style.display = "none";
+  }
+}
+
+// Função para abrir a imagem no modal
+function abrirImagem(url) {
+  modal.style.display = "block";
+  modalImg.src = url;
+}
+
+// SVG para o ícone de imagem (pode ser substituído por uma imagem)
+const iconeImagemSVG = `
+  <svg viewBox="0 0 24 24">
+    <path d="M8.5 13.5l2.5 3 3.5-4.5 4.5 6H5m16 1V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z"/>
+  </svg>
+`;
+function exibirVinhos(vinhos) {
+  const container = document.getElementById('vinhos-container');
+  container.innerHTML = '';
+  
+  vinhos.forEach(vinho => {
+    const card = document.createElement('div');
+    card.className = 'vinho-card';
+    
+    card.innerHTML = `
+      <div class="icone-imagem" onclick="abrirImagem('${vinho['Link Imagem']}')">
+        ${iconeImagemSVG}
+      </div>
+      <h3>${vinho['Nome do Vinho']}</h3>
+      <p>${vinho['Descrição']}</p>
+      <p><strong>Marca:</strong> ${vinho['Marca']}</p>
+      <p><strong>Preço:</strong> R$${vinho['Preço'].toFixed(2)}</p>
+      <div class="quantidade-container">
+        <input type="number" id="quantidade-${vinho['Nome do Vinho']}" value="1" min="1">
+        <button onclick="adicionarAoCarrinho('${vinho['Nome do Vinho']}', ${vinho['Preço']}, 
+          parseInt(document.getElementById('quantidade-${vinho['Nome do Vinho']}').value))">
+          Adicionar ao Carrinho
+        </button>
+      </div>
+    `;
+    
+    container.appendChild(card);
+  });
+}
+/* Adicione ao CSS */
+.modal-carregando {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+// Modifique a função abrirImagem
+function abrirImagem(url) {
+  modal.style.display = "block";
+  modalImg.style.display = "none";
+  
+  // Adiciona spinner
+  const spinner = document.createElement("div");
+  spinner.className = "modal-carregando";
+  modal.appendChild(spinner);
+  
+  modalImg.onload = function() {
+    spinner.remove();
+    modalImg.style.display = "block";
+  };
+  
+  modalImg.src = url;
+}
