@@ -1,32 +1,5 @@
-// URL do seu Google Apps Script (substitua pela sua URL real)
+
 const SCRIPT_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLinoUQ9Ny9GZn1isbdMCYDvrGcKq6y50nG_m6A95VUAi7ONY1MtOGmv-YAQTEBX4SSTPPcwql2vYhRhz8Mq-P4CNtXL0M0Z7xks57h1eKU8-kHpVJDYpOab3I-Ju3ynhwP_wVeKWcnWUwaWkjZlc6vFWapiegCm1UfHyr_-W5GnRuUM3vTBr2IwV1XCh_tis2blOcop0r-bS5yh_xUlOY2D1kky9FnJYo9ulg7qUuy7UUddEhqh75Y9d2ldCYrftOV0sJJ6apH2xiRDta-ORouXeq-hEPSyoHAYNTai&lib=MQ7hZHoz0BREMTQBuxLFtQILLX6lkgy_q';
-
-// Variáveis globais
-let cart = [];
-let wines = [];
-
-// Funções para manipular cookies
-function setCookie(nome, valor, dias) {
-    const data = new Date();
-    data.setTime(data.getTime() + (dias * 24 * 60 * 60 * 1000));
-    const expira = "expires=" + data.toUTCString();
-    document.cookie = nome + "=" + encodeURIComponent(valor) + ";" + expira + ";path=/;SameSite=Lax";
-}
-
-function getCookie(nome) {
-    const nomeCookie = nome + "=";
-    const cookies = document.cookie.split(';');
-    for(let i = 0; i < cookies.length; i++) {
-        let c = cookies[i];
-        while (c.charAt(0) === ' ') {
-            c = c.substring(1);
-        }
-        if (c.indexOf(nomeCookie) === 0) {
-            return decodeURIComponent(c.substring(nomeCookie.length, c.length));
-        }
-    }
-    return "";
-}
 
 // Quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', function() {
