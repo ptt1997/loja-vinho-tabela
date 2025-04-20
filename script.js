@@ -1,146 +1,351 @@
-// Configurações globais
-const CONFIG = { 'https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLhERCCteGcptPlFWvgpegmn2BED1HK0RIHKLbHPkDpz4emaZ4n6SOJ3vs5hKC3EDph4ZH0IPTosYp922yUQ0YLKCZYKvez7Rkwrau24jZMzEBYyna9STO81hALPCzFNdzzPBYsdjSaqYcCO6-TnMuTepqTeNa7KS1luV0yLXUPRCClnwTn_LEAvlMmFpjdc7UtByGDgT9-xDEZW0lTBqNiDMor6WCQFwqhbuKWRYQDCKTAxsGIGyriPZTC3pkJ_lAJI8knziJ6QSGcJJHwYL96-ReA8aG7AycVCdhxN&lib=MQ7hZHoz0BREMTQBuxLFtQILLX6lkgy_q',
-  WHATSAPP: '5546920001218'
-};
+// URL do seu Google Apps Script
+const SCRIPT_URL = 'https://script.google.com/macros/echo?user_content_key=AehSKLjvNkuZiLizqN-_wylFm5A4h_jZ6CAXA1R1XS9njQk5C9Kw5AuREIPNgv_KBHeXbmDTU5LRDTQlAOUnY5IzSXgNhzsvb875sVxU4ekh5DHjL6K2kEuCExO2KlBjbi8LwFafX7bzL-lBFgzle-APA4KWdfIdzj09o97Bc_jk32yGs73fwBh5pOFXd59TNMxYh0OKo9_IVv4F5SX2Phkly-DEqjGWuylOsBhW4Or3DDtP0jBXtWdl5BQFWxzElQ&lib=MQ7hZHoz0BREMTQBuxLFtQILLX6lkgy_q';
 
-// Sistema de armazenamento seguro
-const safeStorage = {
-  get: (key) => {
-    try {
-      return JSON.parse(localStorage.getItem(key));
-    } catch {
-      return null;
-    }
-  },
-  set: (key, value) => {
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
-      return true;
-    } catch {
-      return false;
-    }
-  }
-};
+// Variáveis globais
+let cart = [];
+let wines = [];
 
-// Estado global
-let carrinho = safeStorage.get('carrinho') || [];
-
-// Função para carregar dados da API
-async function carregarDados() {
-  try {
-    const response = await fetch(`${CONFIG.URL_API}?t=${Date.now()}`);
-    if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
-    const data = await response.json();
-    console.log("Dados recebidos:", data);
+// Quando o DOM estiver carregado
+document.addEventListener('DOMContentLoaded', function() {
+    loadWines();
     
-    if (!Array.isArray(data)) throw new Error('Formato de dados inválido');
-
-    return data.filter(item => item['Nome do Vinho'] && item['Preço']);
-  } catch (error) {
-    console.error("Falha ao carregar dados:", error);
-    return [{
-      "Nome do Vinho": "Vinho Reserva",
-      "Descrição": "Exemplo - conexão falhou",
-      "Preço": 89.90,
-      "Marca": "Fallback",
-      "Link Imagem": "https://via.placeholder.com/150"
-    }];
-  }
-}
-
-// Exibe os vinhos em cards
-function exibirVinhos(vinhos) {
-  const container = document.getElementById('vinhos-container');
-  if (!container) return console.error("Elemento #vinhos-container não encontrado");
-  container.innerHTML = '';
-
-  vinhos.forEach(vinho => {
-    const card = document.createElement('div');
-    card.className = 'vinho-card';
-
-    const nomeId = vinho['Nome do Vinho'].replace(/\s/g, '_');
-
-    card.innerHTML = `
-      <img src="${vinho['Link Imagem'] || 'https://via.placeholder.com/150'}" alt="${vinho['Nome do Vinho']}" onclick="abrirModal('${vinho['Link Imagem']}')">
-      <h3>${vinho['Nome do Vinho']}</h3>
-      <p>${vinho['Descrição'] || ''}</p>
-      <p><strong>Marca:</strong> ${vinho['Marca'] || 'N/A'}</p>
-      <p><strong>Preço:</strong> R$${parseFloat(vinho['Preço']).toFixed(2)}</p>
-      <div class="quantidade-container">
-        <input type="number" id="quantidade-${nomeId}" value="1" min="1">
-        <button onclick="adicionarAoCarrinho('${vinho['Nome do Vinho'].replace(/'/g, "\\'")}', ${vinho['Preço']}, document.getElementById('quantidade-${nomeId}').value)">
-          Adicionar ao Carrinho
-        </button>
-      </div>
-    `;
-    container.appendChild(card);
-  });
-}
-
-// Adiciona item ao carrinho
-function adicionarAoCarrinho(nome, preco, quantidade) {
-  quantidade = parseInt(quantidade) || 1;
-  preco = parseFloat(preco);
-
-  const itemExistente = carrinho.find(item => item.nome === nome);
-  if (itemExistente) {
-    itemExistente.quantidade += quantidade;
-  } else {
-    carrinho.push({ nome, preco, quantidade });
-  }
-
-  atualizarCarrinho();
-}
-
-// Atualiza o carrinho de compras
-function atualizarCarrinho() {
-  const container = document.getElementById('carrinho-container');
-  if (!container) return console.error("Elemento #carrinho-container não encontrado");
-  container.innerHTML = '';
-
-  let total = 0;
-  carrinho.forEach(item => {
-    const div = document.createElement('div');
-    div.className = 'carrinho-item';
-    div.innerHTML = `
-      <span>${item.nome} - ${item.quantidade}x R$${item.preco.toFixed(2)}</span>
-      <button onclick="removerItem('${item.nome.replace(/'/g, "\\'")}')">Remover</button>
-    `;
-    container.appendChild(div);
-    total += item.preco * item.quantidade;
-  });
-
-  const totalElement = document.getElementById('total-pedido');
-  if (totalElement) totalElement.textContent = `Total: R$${total.toFixed(2)}`;
-  safeStorage.set('carrinho', carrinho);
-}
-
-// Remove item do carrinho
-function removerItem(nome) {
-  carrinho = carrinho.filter(item => item.nome !== nome);
-  atualizarCarrinho();
-}
-
-// Modal para imagem (opcional)
-function abrirModal(imagem) {
-  window.open(imagem, '_blank');
-}
-
-// Inicialização
-document.addEventListener('DOMContentLoaded', async () => {
-  try {
-    const vinhos = await carregarDados();
-    exibirVinhos(vinhos);
-    if (carrinho.length > 0) atualizarCarrinho();
-  } catch (erro) {
-    console.error("Erro na inicialização:", erro);
-    const container = document.getElementById('vinhos-container');
-    if (container) {
-      container.innerHTML = `
-        <div class="erro">
-          Erro ao carregar produtos. Recarregue a página.
-        </div>
-      `;
+    // Verificar se há itens no carrinho no localStorage
+    const savedCart = localStorage.getItem('wineCart');
+    if (savedCart) {
+        cart = JSON.parse(savedCart);
+        updateCart();
     }
-  }
 });
+
+// Carregar vinhos do Google Sheets
+function loadWines() {
+    fetch(SCRIPT_URL)
+        .then(response => response.json())
+        .then(data => {
+            wines = data;
+            renderWineTable();
+        })
+        .catch(error => {
+            console.error('Erro ao carregar vinhos:', error);
+            document.getElementById('wine-table-body').innerHTML = 
+                '<tr><td colspan="7" style="text-align: center;">Erro ao carregar os vinhos. Por favor, recarregue a página.</td></tr>';
+        });
+}
+
+// Renderizar tabela de vinhos
+function renderWineTable() {
+    const tableBody = document.getElementById('wine-table-body');
+    tableBody.innerHTML = '';
+
+    if (wines.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Nenhum vinho encontrado.</td></tr>';
+        return;
+    }
+
+    wines.forEach(wine => {
+        const row = document.createElement('tr');
+        
+        // Coluna da Imagem (ícone de câmera)
+        const imgCell = document.createElement('td');
+        if (wine['Link Imagem']) {
+            const imgIcon = document.createElement('i');
+            imgIcon.className = 'fas fa-camera wine-image';
+            imgIcon.style.cursor = 'pointer';
+            imgIcon.onclick = () => openImageModal(wine['Link Imagem']);
+            imgCell.appendChild(imgIcon);
+        } else {
+            imgCell.textContent = '-';
+        }
+        
+        // Coluna Nome
+        const nameCell = document.createElement('td');
+        nameCell.textContent = wine['Nome do Vinho'] || '-';
+        
+        // Coluna Descrição
+        const descCell = document.createElement('td');
+        descCell.textContent = wine['Descrição'] || '-';
+        
+        // Coluna Marca
+        const brandCell = document.createElement('td');
+        brandCell.textContent = wine['Marca'] || '-';
+        
+        // Coluna Preço
+        const priceCell = document.createElement('td');
+        const price = parseFloat(wine['Preço']) || 0;
+        priceCell.textContent = price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        
+        // Coluna Quantidade
+        const qtyCell = document.createElement('td');
+        const qtyControl = document.createElement('div');
+        qtyControl.className = 'quantity-control';
+        
+        const minusBtn = document.createElement('button');
+        minusBtn.className = 'quantity-btn';
+        minusBtn.innerHTML = '-';
+        minusBtn.onclick = () => adjustQuantity(minusBtn, -1);
+        
+        const plusBtn = document.createElement('button');
+        plusBtn.className = 'quantity-btn';
+        plusBtn.innerHTML = '+';
+        plusBtn.onclick = () => adjustQuantity(plusBtn, 1);
+        
+        const qtyInput = document.createElement('input');
+        qtyInput.type = 'text';
+        qtyInput.className = 'quantity-input';
+        qtyInput.value = '1';
+        qtyInput.min = '1';
+        
+        qtyControl.appendChild(minusBtn);
+        qtyControl.appendChild(qtyInput);
+        qtyControl.appendChild(plusBtn);
+        qtyCell.appendChild(qtyControl);
+        
+        // Coluna Ação (Adicionar ao Carrinho)
+        const actionCell = document.createElement('td');
+        const addBtn = document.createElement('button');
+        addBtn.className = 'add-to-cart-btn';
+        addBtn.textContent = 'Adicionar';
+        addBtn.onclick = () => addToCart(wine, parseInt(qtyInput.value));
+        actionCell.appendChild(addBtn);
+        
+        // Montar a linha
+        row.appendChild(imgCell);
+        row.appendChild(nameCell);
+        row.appendChild(descCell);
+        row.appendChild(brandCell);
+        row.appendChild(priceCell);
+        row.appendChild(qtyCell);
+        row.appendChild(actionCell);
+        
+        tableBody.appendChild(row);
+    });
+}
+
+// Ajustar quantidade
+function adjustQuantity(button, change) {
+    const qtyControl = button.parentElement;
+    const input = qtyControl.querySelector('.quantity-input');
+    let newValue = parseInt(input.value) + change;
+    
+    if (newValue < 1) newValue = 1;
+    
+    input.value = newValue;
+}
+
+// Adicionar ao carrinho
+function addToCart(wine, quantity) {
+    // Verificar se o vinho já está no carrinho
+    const existingItem = cart.find(item => item.id === wine['Nome do Vinho']);
+    
+    if (existingItem) {
+        existingItem.quantity += quantity;
+    } else {
+        cart.push({
+            id: wine['Nome do Vinho'],
+            name: wine['Nome do Vinho'],
+            description: wine['Descrição'],
+            brand: wine['Marca'],
+            price: parseFloat(wine['Preço']) || 0,
+            quantity: quantity,
+            image: wine['Link Imagem']
+        });
+    }
+    
+    updateCart();
+    showCartNotification();
+}
+
+// Atualizar carrinho
+function updateCart() {
+    // Salvar carrinho no localStorage
+    localStorage.setItem('wineCart', JSON.stringify(cart));
+    
+    // Atualizar contador
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    document.getElementById('cart-count').textContent = totalItems;
+    
+    // Atualizar lista de itens
+    const cartItems = document.getElementById('cart-items');
+    
+    if (cart.length === 0) {
+        cartItems.innerHTML = '<p class="empty-cart-message">Seu carrinho está vazio</p>';
+        document.getElementById('cart-total').textContent = 'R$ 0,00';
+        return;
+    }
+    
+    cartItems.innerHTML = '';
+    let total = 0;
+    
+    cart.forEach((item, index) => {
+        const itemElement = document.createElement('div');
+        itemElement.className = 'cart-item';
+        
+        const itemInfo = document.createElement('div');
+        itemInfo.className = 'cart-item-info';
+        
+        const itemName = document.createElement('div');
+        itemName.className = 'cart-item-name';
+        itemName.textContent = item.name;
+        
+        const itemBrand = document.createElement('div');
+        itemBrand.className = 'cart-item-brand';
+        itemBrand.textContent = item.brand;
+        
+        const itemPrice = document.createElement('div');
+        itemPrice.className = 'cart-item-price';
+        itemPrice.textContent = (item.price * item.quantity).toLocaleString('pt-BR', { 
+            style: 'currency', 
+            currency: 'BRL' 
+        });
+        
+        const itemQty = document.createElement('div');
+        itemQty.className = 'cart-item-quantity';
+        
+        const minusBtn = document.createElement('button');
+        minusBtn.className = 'quantity-btn';
+        minusBtn.innerHTML = '-';
+        minusBtn.onclick = () => adjustCartItem(index, -1);
+        
+        const plusBtn = document.createElement('button');
+        plusBtn.className = 'quantity-btn';
+        plusBtn.innerHTML = '+';
+        plusBtn.onclick = () => adjustCartItem(index, 1);
+        
+        const qtyInput = document.createElement('input');
+        qtyInput.type = 'text';
+        qtyInput.className = 'quantity-input';
+        qtyInput.value = item.quantity;
+        qtyInput.onchange = (e) => updateCartItemQuantity(index, parseInt(e.target.value) || 1);
+        
+        const removeBtn = document.createElement('span');
+        removeBtn.className = 'cart-item-remove';
+        removeBtn.innerHTML = '<i class="fas fa-trash"></i>';
+        removeBtn.onclick = () => removeFromCart(index);
+        
+        itemQty.appendChild(minusBtn);
+        itemQty.appendChild(qtyInput);
+        itemQty.appendChild(plusBtn);
+        
+        itemInfo.appendChild(itemName);
+        itemInfo.appendChild(itemBrand);
+        itemInfo.appendChild(itemPrice);
+        itemInfo.appendChild(itemQty);
+        
+        itemElement.appendChild(itemInfo);
+        itemElement.appendChild(removeBtn);
+        
+        cartItems.appendChild(itemElement);
+        
+        total += item.price * item.quantity;
+    });
+    
+    document.getElementById('cart-total').textContent = total.toLocaleString('pt-BR', { 
+        style: 'currency', 
+        currency: 'BRL' 
+    });
+}
+
+// Ajustar item do carrinho
+function adjustCartItem(index, change) {
+    const newQuantity = cart[index].quantity + change;
+    
+    if (newQuantity < 1) {
+        removeFromCart(index);
+    } else {
+        cart[index].quantity = newQuantity;
+        updateCart();
+    }
+}
+
+// Atualizar quantidade do item no carrinho
+function updateCartItemQuantity(index, newQuantity) {
+    if (newQuantity < 1) {
+        removeFromCart(index);
+    } else {
+        cart[index].quantity = newQuantity;
+        updateCart();
+    }
+}
+
+// Remover do carrinho
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCart();
+}
+
+// Mostrar notificação de item adicionado
+function showCartNotification() {
+    const notification = document.createElement('div');
+    notification.className = 'cart-notification';
+    notification.textContent = 'Item adicionado ao carrinho!';
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.classList.add('fade-out');
+        setTimeout(() => notification.remove(), 500);
+    }, 2000);
+}
+
+// Alternar visibilidade do carrinho
+function toggleCart() {
+    const cart = document.getElementById('floating-cart');
+    cart.classList.toggle('active');
+}
+
+// Abrir modal de imagem
+function openImageModal(imageUrl) {
+    const modal = document.getElementById('image-modal');
+    const modalImg = document.getElementById('modal-image');
+    
+    modal.style.display = 'block';
+    modalImg.src = imageUrl;
+}
+
+// Fechar modal de imagem
+function closeModal() {
+    document.getElementById('image-modal').style.display = 'none';
+}
+
+// Enviar pedido para WhatsApp
+function sendToWhatsApp() {
+    if (cart.length === 0) {
+        alert('Seu carrinho está vazio!');
+        return;
+    }
+    
+    const phoneNumber = '5546920001218';
+    let message = 'Olá, gostaria de fazer o seguinte pedido:\n\n';
+    
+    cart.forEach(item => {
+        message += `- ${item.name} (${item.brand}): ${item.quantity} x ${item.price.toLocaleString('pt-BR', { 
+            style: 'currency', 
+            currency: 'BRL' 
+        })}\n`;
+    });
+    
+    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    message += `\n*Total: ${total.toLocaleString('pt-BR', { 
+        style: 'currency', 
+        currency: 'BRL' 
+    })}*`;
+    
+    message += '\n\nPor favor, confirme o pedido. Obrigado!';
+    
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+    
+    window.open(whatsappUrl, '_blank');
+    
+    // Limpar carrinho após envio
+    cart = [];
+    updateCart();
+    toggleCart();
+}
+
+// Fechar modal ao clicar fora da imagem
+window.onclick = function(event) {
+    const modal = document.getElementById('image-modal');
+    if (event.target === modal) {
+        closeModal();
+    }
+};
