@@ -3,12 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vinharia Premium - Seu Vinho Favorito Aqui</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        /* CSS será inserido aqui */
-        /* O CSS completo está na seção CSS abaixo */
-    </style>
+    <title>Vinharia - Seu Site de Vinhos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
@@ -25,7 +22,7 @@
                 <thead>
                     <tr>
                         <th>Imagem</th>
-                        <th>Nome do Vinho</th>
+                        <th>Nome</th>
                         <th>Descrição</th>
                         <th>Marca</th>
                         <th>Preço</th>
@@ -34,40 +31,22 @@
                     </tr>
                 </thead>
                 <tbody id="wine-table-body">
-                    <!-- Os vinhos serão carregados aqui via JavaScript -->
+                    <!-- Os dados serão carregados aqui via JavaScript -->
                 </tbody>
             </table>
         </div>
     </main>
 
+    <!-- Carrinho flutuante -->
     <div class="floating-cart" id="floating-cart">
-        <div class="cart-header">
-            <h3>Seu Carrinho</h3>
-            <button class="close-cart" onclick="toggleCart()">&times;</button>
-        </div>
-        <div class="cart-items" id="cart-items">
-            <!-- Itens do carrinho serão adicionados aqui -->
-            <p class="empty-cart-message">Seu carrinho está vazio</p>
-        </div>
-        <div class="cart-footer">
-            <div class="cart-total">
-                <span>Total:</span>
-                <span id="cart-total">R$ 0,00</span>
-            </div>
-            <button class="checkout-btn" onclick="sendToWhatsApp()">
-                Finalizar Pedido no WhatsApp
-            </button>
-        </div>
+        <!-- Conteúdo do carrinho -->
     </div>
 
+    <!-- Modal de imagem -->
     <div class="image-modal" id="image-modal">
-        <span class="close-modal" onclick="closeModal()">&times;</span>
-        <img class="modal-content" id="modal-image">
+        <!-- Conteúdo do modal -->
     </div>
 
-    <script>
-        // JavaScript será inserido aqui
-        // O JavaScript completo está na seção JavaScript abaixo
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
