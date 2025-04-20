@@ -1,6 +1,6 @@
 // Configurações
 const CONFIG = {
-  URL_API: 'https://script.google.com/macros/s/AKfycbxOVVlXhECClvMU2gkOI0HF5NutWibycWi5mN7hEpOU8K100MQbN2uweEpxFb1X_jNgQg/exec',
+  URL_API: 'https://script.google.com/macros/s/AKfycbzk0LpF3gEwIqA0fSwfJ2CFp4wvkB0nOniBkuVeIHYmKMjP13jxbbjp0M0tf1r3DHozfQ/exec',
   WHATSAPP: '5546920001218'
 };
 
