@@ -75,4 +75,24 @@ function atualizarCarrinho() {
       </tr>
     `;
   }
+  // Controle do carrinho
+function toggleCarrinho() {
+  const painel = document.getElementById('carrinho-painel');
+  painel.classList.toggle('ativo');
+}
+
+function atualizarContador() {
+  const totalItens = carrinho.reduce((total, item) => total + item.quantidade, 0);
+  document.getElementById('carrinho-contador').textContent = totalItens;
+  
+  // Esconde contador se vazio
+  document.getElementById('carrinho-contador').style.display = 
+    totalItens > 0 ? 'flex' : 'none';
+}
+
+// Adicione no final da função atualizarCarrinho():
+function atualizarCarrinho() {
+  // ... (código existente)
+  atualizarContador(); // Adicione esta linha
+}
 })();
