@@ -24,23 +24,29 @@
     </tbody>
   </table>
 
-  <!-- Carrinho de Compras -->
-  <div id="carrinho">
-    <h2>🛒 Seu Carrinho</h2>
-    <table id="tabela-carrinho">
-      <thead>
-        <tr>
-          <th>Item</th>
-          <th>Qtd</th>
-          <th>Preço</th>
-          <th>Ação</th>
-        </tr>
-      </thead>
-      <tbody id="itens-carrinho"></tbody>
-    </table>
-    <p id="total">Total: R$0.00</p>
-    <button id="finalizar">Finalizar via WhatsApp</button>
-  </div>
+  <!-- Ícone do Carrinho -->
+<div id="carrinho-icone">
+  🛒
+  <div class="contador" id="carrinho-contador">0</div>
+</div>
+
+<!-- Painel do Carrinho -->
+<div id="carrinho-painel">
+  <h2>Seu Carrinho</h2>
+  <table id="tabela-carrinho">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Qtd</th>
+        <th>Preço</th>
+        <th>Ação</th>
+      </tr>
+    </thead>
+    <tbody id="itens-carrinho"></tbody>
+  </table>
+  <p id="total">Total: R$0.00</p>
+  <button id="finalizar">Finalizar via WhatsApp</button>
+</div>
 
   <!-- Modal para Imagens -->
   <div id="modal" class="modal">
