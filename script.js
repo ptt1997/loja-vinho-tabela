@@ -1,6 +1,6 @@
 // Configurações globais
 const CONFIG = {
-  URL_API: 'https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLgHsV82Pgm8kG3JEr6uTrd5CN68Wv6biWMeNwcKTFsPuF7rT8FYBV0lbeDtxg2SnprQf-0v6GfZj5C7DQzB2-6W0xc_o0Cu0yo2fEzFT1V4AZ2cHAmlhfRLA4gLZumV1fFrYYXEk2-ZksNFAfzlbPbxdZ7w_YqY3LZVSxgJDOxjaHTVSfhqdYhogqtM8Aqt-SlcSFTRBzjLoFF5NpZvWZb1XXG4OzqJ7vjUBUfaq3bRfjfH5LFgOK_b1zV3nM7PXH3wpzl5axFPIUIb0Bl4m2cgt-32YtBp-O0mHzgb&lib=MQ7hZHoz0BREMTQBuxLFtQILLX6lkgy_q',
+  URL_API: 'https://script.google.com/macros/s/AKfycbxOVVlXhECClvMU2gkOI0HF5NutWibycWi5mN7hEpOU8K100MQbN2uweEpxFb1X_jNgQg/exec',
   WHATSAPP: '5546920001218'
 };
 
