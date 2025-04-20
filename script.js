@@ -1,29 +1,14 @@
-// Dados iniciais (substitua pela sua planilha depois)
-const vinhosMock = [
-  {
-    "Nome do Vinho": "Cabernet Sauvignon",
-    "Descrição": "Vinho tinto seco com notas de frutas vermelhas",
-    "Preço": 89.90,
-    "Marca": "VinhoFino",
-    "Link Imagem": "https://exemplo.com/vinho1.jpg"
-  },
-  {
-    "Nome do Vinho": "Chardonnay",
-    "Descrição": "Vinho branco com aroma de baunilha",
-    "Preço": 75.50,
-    "Marca": "VinhoBom",
-    "Link Imagem": "https://exemplo.com/vinho2.jpg"
-  }
-];
+// Configurações
+const numeroWhatsApp = '5546920001218'; // Seu número aqui
+const urlPlanilha = https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLh0s-DdzFvXEmcUDNnAIh5fsu0EbN61P13mn9O3JAChi-V8Sy1RyzJ7QfKbH5gMSdNvaDqOuqY9Iinsq2wtSzicxhvBSjcdMWisC5-JgMbIJSOehMdT-wLzbFsdKG_GSPPhKIKF3oX73sMcSCvKaz51owukqbFo2ccWw4gVO9VHHTQRaTiCFbYzsdvoTsUkki4olrqri62tGynotfrq6kl6guuSDMTKtP_LEt7teZWfFclXDz2fOHI_1tWMW1TdylVvcWVBXyGnphzB3vxlEEi5qfpzRg&lib=MnQYBkRsDbv4uLRxNoSIgA-aoJlzzZ8rm; // Substitua pela sua URL
 
 // Variáveis globais
 let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
-const numeroWhatsApp = '5546920001218'; // Seu número com DDD
 
 // Elementos DOM
 const elementos = {
-  vinhosContainer: document.getElementById('vinhos-container'),
-  carrinhoItens: document.getElementById('carrinho-itens'),
+  corpoTabela: document.getElementById('corpo-tabela'),
+  itensCarrinho: document.getElementById('itens-carrinho'),
   total: document.getElementById('total'),
   finalizarBtn: document.getElementById('finalizar'),
   modal: document.getElementById('modal'),
@@ -31,48 +16,38 @@ const elementos = {
   fecharModal: document.querySelector('.fechar')
 };
 
-// Funções principais
+// Carrega os vinhos da planilha
 function carregarVinhos() {
-  // Substitua por fetch do Google Sheets depois
-  exibirVinhos(vinhosMock);
-  
-  // Versão com Google Sheets (descomente depois):
-  /*
-  fetch(https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLh0s-DdzFvXEmcUDNnAIh5fsu0EbN61P13mn9O3JAChi-V8Sy1RyzJ7QfKbH5gMSdNvaDqOuqY9Iinsq2wtSzicxhvBSjcdMWisC5-JgMbIJSOehMdT-wLzbFsdKG_GSPPhKIKF3oX73sMcSCvKaz51owukqbFo2ccWw4gVO9VHHTQRaTiCFbYzsdvoTsUkki4olrqri62tGynotfrq6kl6guuSDMTKtP_LEt7teZWfFclXDz2fOHI_1tWMW1TdylVvcWVBXyGnphzB3vxlEEi5qfpzRg&lib=MnQYBkRsDbv4uLRxNoSIgA-aoJlzzZ8rm)
+  fetch(urlPlanilha)
     .then(response => response.json())
-    .then(data => exibirVinhos(data))
+    .then(vinhos => exibirVinhos(vinhos))
     .catch(err => {
-      console.error("Erro ao carregar vinhos:", err);
-      exibirVinhos(vinhosMock); // Fallback
+      console.error("Erro ao carregar dados:", err);
+      alert("Erro ao carregar produtos. Recarregue a página.");
     });
-  */
 }
 
+// Exibe os vinhos na tabela
 function exibirVinhos(vinhos) {
-  elementos.vinhosContainer.innerHTML = '';
+  elementos.corpoTabela.innerHTML = '';
   
   vinhos.forEach(vinho => {
-    const div = document.createElement('div');
-    div.className = 'vinho';
-    div.innerHTML = `
-      <div class="img-placeholder" onclick="abrirModal('${vinho['Link Imagem']}')">
-        🍷 Clique para ver
-      </div>
-      <h3>${vinho['Nome do Vinho']}</h3>
-      <p>${vinho['Descrição']}</p>
-      <p><strong>Marca:</strong> ${vinho['Marca']}</p>
-      <p><strong>Preço:</strong> R$${vinho['Preço'].toFixed(2)}</p>
-      <div class="controles">
-        <input type="number" min="1" value="1" class="quantidade">
-        <button onclick="adicionarAoCarrinho('${vinho['Nome do Vinho']}', ${vinho['Preço']}, this.parentElement.querySelector('.quantidade').value)">
-          Adicionar
-        </button>
-      </div>
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td><span class="icone-imagem" onclick="abrirImagem('${vinho['Link Imagem']}')">📷</span></td>
+      <td>${vinho['Nome do Vinho']}</td>
+      <td>${vinho['Descrição']}</td>
+      <td>R$${vinho['Preço'].toFixed(2)}</td>
+      <td>
+        <input type="number" min="1" value="1" class="quantidade" style="width: 50px;">
+        <button onclick="adicionarAoCarrinho('${vinho['Nome do Vinho']}', ${vinho['Preço']}, this.parentElement.querySelector('.quantidade').value)">+</button>
+      </td>
     `;
-    elementos.vinhosContainer.appendChild(div);
+    elementos.corpoTabela.appendChild(row);
   });
 }
 
+// Funções do Carrinho
 function adicionarAoCarrinho(nome, preco, quantidade) {
   quantidade = parseInt(quantidade);
   const itemExistente = carrinho.find(item => item.nome === nome);
@@ -91,18 +66,18 @@ function adicionarAoCarrinho(nome, preco, quantidade) {
 }
 
 function atualizarCarrinho() {
-  elementos.carrinhoItens.innerHTML = '';
+  elementos.itensCarrinho.innerHTML = '';
   let total = 0;
   
   carrinho.forEach(item => {
-    const div = document.createElement('div');
-    div.className = 'item-carrinho';
-    div.innerHTML = `
-      ${item.nome} 
-      <span>${item.quantidade}x R$${(item.preco * item.quantidade).toFixed(2)}</span>
-      <button onclick="removerItem('${item.nome}')">🗑️</button>
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${item.nome}</td>
+      <td>${item.quantidade}</td>
+      <td>R$${(item.preco * item.quantidade).toFixed(2)}</td>
+      <td><button onclick="removerItem('${item.nome}')">❌</button></td>
     `;
-    elementos.carrinhoItens.appendChild(div);
+    elementos.itensCarrinho.appendChild(row);
     total += item.preco * item.quantidade;
   });
   
@@ -115,8 +90,9 @@ function removerItem(nome) {
   atualizarCarrinho();
 }
 
-function abrirModal(urlImagem) {
-  elementos.imagemModal.src = urlImagem;
+// Funções do Modal
+function abrirImagem(url) {
+  elementos.imagemModal.src = url;
   elementos.modal.style.display = 'block';
 }
 
@@ -124,22 +100,23 @@ function fecharModal() {
   elementos.modal.style.display = 'none';
 }
 
+// Finalizar Pedido
 function finalizarPedido() {
   if (carrinho.length === 0) {
     alert("Seu carrinho está vazio!");
     return;
   }
   
-  let mensagem = "🚀 *Pedido de Vinhos* 🚀\n\n";
+  let mensagem = "📋 *PEDIDO DE VINHOS* 📋\n\n";
   carrinho.forEach(item => {
     mensagem += `➡ ${item.nome} (${item.quantidade}x): R$${(item.preco * item.quantidade).toFixed(2)}\n`;
   });
   
-  mensagem += `\n💵 *Total: R$${carrinho.reduce((total, item) => total + (item.preco * item.quantidade), 0).toFixed(2)}*`;
+  mensagem += `\n💰 *TOTAL: R$${carrinho.reduce((total, item) => total + (item.preco * item.quantidade), 0).toFixed(2)}*`;
   
   window.open(`https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`, '_blank');
   
-  // Limpa o carrinho após finalizar
+  // Limpa o carrinho (opcional)
   carrinho = [];
   atualizarCarrinho();
 }
@@ -154,5 +131,5 @@ elementos.modal.addEventListener('click', (e) => {
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
   carregarVinhos();
-  atualizarCarrinho();
+  if (carrinho.length > 0) atualizarCarrinho();
 });
