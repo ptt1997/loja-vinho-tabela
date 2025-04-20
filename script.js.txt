@@ -5,7 +5,7 @@ const numeroWhatsApp = '5546920001218'; // Substitua pelo seu número
 // Função para carregar vinhos do Google Sheets
 async function carregarVinhos() {
   try {
-    const response = await fetch('SUA_URL_DO_APPS_SCRIPT_AQUI');
+    const response = await fetch(https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLg6-vjh1ZwN3U-96FGXADNaHGQiMRY2stexsB0iZgyhQ7CdWPiAYBLjWZ_H8UwAluPCWJO_UcTtY8O2n7EmaIN3ubVeaIgIVbQlDPGeJs-V7dhMqxTagrNAGJ5tX0m8yHi8wrWHZ4Dq7IM5btGr6ZUmSNMinlbvt8Z2p16AYIrGuBbUL3UPcw9fZZEQEoNva9gViyWPvGMXakO5SubVbR8eCFYnuQuhP7ZkJhwX8j-GqsFO7fvj_rnd4j0CZxcUrErDpiB6of9HCVRy7FeZtWMG4-ijPQ&lib=MnQYBkRsDbv4uLRxNoSIgA-aoJlzzZ8rm);
     const vinhos = await response.json();
     exibirVinhos(vinhos);
   } catch (error) {
