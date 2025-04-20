@@ -1,38 +1,73 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Loja de Vinhos - Tabela</title>
-  <link rel="stylesheet" href="style.css">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vinharia Premium - Seu Vinho Favorito Aqui</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* CSS será inserido aqui */
+        /* O CSS completo está na seção CSS abaixo */
+    </style>
 </head>
 <body>
-  <h1>🍷 Loja de Vinhos</h1>
+    <header>
+        <h1>Vinharia Premium</h1>
+        <div class="cart-icon" onclick="toggleCart()">
+            <i class="fas fa-shopping-cart"></i>
+            <span id="cart-count">0</span>
+        </div>
+    </header>
 
-  <!-- Container dos Cards de Vinhos -->
-  <div id="vinhos-container" class="vinhos-grid">
-    <!-- Cards serão inseridos aqui via JavaScript -->
-  </div>
+    <main>
+        <div class="wine-table-container">
+            <table id="wine-table">
+                <thead>
+                    <tr>
+                        <th>Imagem</th>
+                        <th>Nome do Vinho</th>
+                        <th>Descrição</th>
+                        <th>Marca</th>
+                        <th>Preço</th>
+                        <th>Quantidade</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="wine-table-body">
+                    <!-- Os vinhos serão carregados aqui via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </main>
 
-  <!-- Carrinho Flutuante -->
-  <div id="carrinho-flutuante">
-    🛒 <span id="carrinho-contador">0</span>
-  </div>
+    <div class="floating-cart" id="floating-cart">
+        <div class="cart-header">
+            <h3>Seu Carrinho</h3>
+            <button class="close-cart" onclick="toggleCart()">&times;</button>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <!-- Itens do carrinho serão adicionados aqui -->
+            <p class="empty-cart-message">Seu carrinho está vazio</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cart-total">R$ 0,00</span>
+            </div>
+            <button class="checkout-btn" onclick="sendToWhatsApp()">
+                Finalizar Pedido no WhatsApp
+            </button>
+        </div>
+    </div>
 
-  <!-- Painel Lateral do Carrinho -->
-  <div id="carrinho-painel">
-    <h2>🛒 Seu Carrinho</h2>
-    <div id="carrinho-container"></div>
-    <p id="total-pedido">Total: R$0.00</p>
-    <button id="finalizar-whatsapp">Finalizar via WhatsApp</button>
-  </div>
+    <div class="image-modal" id="image-modal">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modal-image">
+    </div>
 
-  <!-- Modal de Imagem -->
-  <div id="modal" class="modal">
-    <span class="fechar" onclick="document.getElementById('modal').style.display='none'">&times;</span>
-    <img id="imagem-modal" class="modal-conteudo">
-  </div>
-
-  <script src="script.js"></script>
+    <script>
+        // JavaScript será inserido aqui
+        // O JavaScript completo está na seção JavaScript abaixo
+    </script>
 </body>
 </html>
