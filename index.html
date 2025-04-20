@@ -1,57 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
+  <meta charset="UTF-8">
   <title>Loja de Vinhos - Tabela</title>
   <link rel="stylesheet" href="style.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
   <h1>🍷 Loja de Vinhos</h1>
-  
-  <!-- Tabela de Produtos -->
-  <table id="tabela-vinhos">
-    <thead>
-      <tr>
-        <th>Imagem</th>
-        <th>Nome</th>
-        <th>Descrição</th>
-        <th>Preço</th>
-        <th>Ação</th>
-      </tr>
-    </thead>
-    <tbody id="corpo-tabela">
-      <!-- Os vinhos serão inseridos aqui via JavaScript -->
-    </tbody>
-  </table>
 
-  <!-- Ícone do Carrinho -->
-<div id="carrinho-icone">
-  🛒
-  <div class="contador" id="carrinho-contador">0</div>
-</div>
+  <!-- Container dos Cards de Vinhos -->
+  <div id="vinhos-container" class="vinhos-grid">
+    <!-- Cards serão inseridos aqui via JavaScript -->
+  </div>
 
-<!-- Painel do Carrinho -->
-<div id="carrinho-painel">
-  <h2>Seu Carrinho</h2>
-  <table id="tabela-carrinho">
-    <thead>
-      <tr>
-        <th>Item</th>
-        <th>Qtd</th>
-        <th>Preço</th>
-        <th>Ação</th>
-      </tr>
-    </thead>
-    <tbody id="itens-carrinho"></tbody>
-  </table>
-  <p id="total">Total: R$0.00</p>
-  <button id="finalizar">Finalizar via WhatsApp</button>
-</div>
+  <!-- Carrinho Flutuante -->
+  <div id="carrinho-flutuante">
+    🛒 <span id="carrinho-contador">0</span>
+  </div>
 
-  <!-- Modal para Imagens -->
+  <!-- Painel Lateral do Carrinho -->
+  <div id="carrinho-painel">
+    <h2>🛒 Seu Carrinho</h2>
+    <div id="carrinho-container"></div>
+    <p id="total-pedido">Total: R$0.00</p>
+    <button id="finalizar-whatsapp">Finalizar via WhatsApp</button>
+  </div>
+
+  <!-- Modal de Imagem -->
   <div id="modal" class="modal">
-    <span class="fechar">&times;</span>
-    <img id="imagem-modal">
+    <span class="fechar" onclick="document.getElementById('modal').style.display='none'">&times;</span>
+    <img id="imagem-modal" class="modal-conteudo">
   </div>
 
   <script src="script.js"></script>
