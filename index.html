@@ -3,58 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vinharia Premium - Seus Vinhos Favoritos</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" href="data:,">
+    <title>Vinharia Premium - Seu Vinho Favorito Aqui</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* CSS será inserido aqui */
+        /* O CSS completo está na seção CSS abaixo */
+    </style>
 </head>
 <body>
     <header>
-        <div class="header-container">
-            <h1><i class="fas fa-wine-bottle"></i> Vinharia Premium</h1>
-            <div class="cart-icon" onclick="toggleCart()">
-                <i class="fas fa-shopping-cart"></i>
-                <span id="cart-count">0</span>
-            </div>
+        <h1>Vinharia Premium</h1>
+        <div class="cart-icon" onclick="toggleCart()">
+            <i class="fas fa-shopping-cart"></i>
+            <span id="cart-count">0</span>
         </div>
     </header>
 
     <main>
-        <div class="container">
-            <div class="wine-table-container">
-                <table id="wine-table">
-                    <thead>
-                        <tr>
-                            <th class="image-col">Imagem</th>
-                            <th>Nome do Vinho</th>
-                            <th>Descrição</th>
-                            <th>Marca</th>
-                            <th>Preço</th>
-                            <th class="quantity-col">Quantidade</th>
-                            <th class="action-col">Ação</th>
-                        </tr>
-                    </thead>
-                    <tbody id="wine-table-body">
-                        <tr>
-                            <td colspan="7">Carregando vinhos...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="wine-table-container">
+            <table id="wine-table">
+                <thead>
+                    <tr>
+                        <th>Imagem</th>
+                        <th>Nome do Vinho</th>
+                        <th>Descrição</th>
+                        <th>Marca</th>
+                        <th>Preço</th>
+                        <th>Quantidade</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="wine-table-body">
+                    <!-- Os vinhos serão carregados aqui via JavaScript -->
+                </tbody>
+            </table>
         </div>
     </main>
 
-    <!-- Carrinho Flutuante -->
     <div class="floating-cart" id="floating-cart">
         <div class="cart-header">
-            <h3><i class="fas fa-shopping-cart"></i> Seu Carrinho</h3>
+            <h3>Seu Carrinho</h3>
             <button class="close-cart" onclick="toggleCart()">&times;</button>
         </div>
         <div class="cart-items" id="cart-items">
-            <div class="empty-cart-message">
-                <i class="fas fa-wine-bottle"></i>
-                <p>Seu carrinho está vazio</p>
-            </div>
+            <!-- Itens do carrinho serão adicionados aqui -->
+            <p class="empty-cart-message">Seu carrinho está vazio</p>
         </div>
         <div class="cart-footer">
             <div class="cart-total">
@@ -62,17 +55,19 @@
                 <span id="cart-total">R$ 0,00</span>
             </div>
             <button class="checkout-btn" onclick="sendToWhatsApp()">
-                <i class="fab fa-whatsapp"></i> Finalizar Pedido
+                Finalizar Pedido no WhatsApp
             </button>
         </div>
     </div>
 
-    <!-- Modal de Imagem -->
     <div class="image-modal" id="image-modal">
         <span class="close-modal" onclick="closeModal()">&times;</span>
         <img class="modal-content" id="modal-image">
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // JavaScript será inserido aqui
+        // O JavaScript completo está na seção JavaScript abaixo
+    </script>
 </body>
 </html>
