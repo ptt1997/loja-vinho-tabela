@@ -1,6 +1,6 @@
 // Configurações
 const numeroWhatsApp = '5546920001218'; // Seu número aqui
-const urlPlanilha = https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLizIv1-mY-pphKqz033UE76cgZjaR7LI1BpYFsFr6qR7b3mDlx75L_FemuO5agUtpD0DNTQrPSKpYaEo4ogk-d92GbFlWaUGnDEZxVDLTlv8dl9LzS6BRQR8aYqBLQ0erGAucv4aHvyuVdE39SupfsV6i3Xk0zLXNtJeEwzF2kpFu1sgaridKbY4V2SfqzgHaoGDLeFkFm_kwI82W57vKyKwXDE7sOcJSFf3L_DA_rFIxwhnr1Ig1VQxA8wqaASkx9hDd1Ky4kj-VimV320MTQHj3qRuA&lib=MnQYBkRsDbv4uLRxNoSIgA-aoJlzzZ8rm; // Substitua pela sua URL
+const urlPlanilha = 'https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLizIv1-mY-pphKqz033UE76cgZjaR7LI1BpYFsFr6qR7b3mDlx75L_FemuO5agUtpD0DNTQrPSKpYaEo4ogk-d92GbFlWaUGnDEZxVDLTlv8dl9LzS6BRQR8aYqBLQ0erGAucv4aHvyuVdE39SupfsV6i3Xk0zLXNtJeEwzF2kpFu1sgaridKbY4V2SfqzgHaoGDLeFkFm_kwI82W57vKyKwXDE7sOcJSFf3L_DA_rFIxwhnr1Ig1VQxA8wqaASkx9hDd1Ky4kj-VimV320MTQHj3qRuA&lib=MnQYBkRsDbv4uLRxNoSIgA-aoJlzzZ8rm';; // Substitua pela sua URL
 
 // Variáveis globais
 let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
