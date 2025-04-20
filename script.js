@@ -1,5 +1,5 @@
 // URL do seu Google Apps Script (substitua pela sua URL real)
-const SCRIPT_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLgoUvEYAs0OlTSBZmtBXWf6YvVYgavEWB7Hebm0BRfohMU0iiys3a74SBGdDeePEK7nLWFheX2B5jlkynUAmnOa-dQQ4A9Ag4S0Gbi37Sits0XIRn8ft-brtFAj5wM17VgglQcNEenie3X_CmztJAtc8gpvcae0BV0nJgddQY2lniucQY2In9EGIyo4_Sm9JhoxmaKxhg5cutKhwfDz1qVIE1uFHLkfl0FhD76nojkVtVVq7QaxQjdAS83LALuJRrNSe5s6V97k7YcKzq_FTuTFTvNk0HVM6dUvZbMx&lib=MQ7hZHoz0BREMTQBuxLFtQILLX6lkgy_q';
+const SCRIPT_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLinoUQ9Ny9GZn1isbdMCYDvrGcKq6y50nG_m6A95VUAi7ONY1MtOGmv-YAQTEBX4SSTPPcwql2vYhRhz8Mq-P4CNtXL0M0Z7xks57h1eKU8-kHpVJDYpOab3I-Ju3ynhwP_wVeKWcnWUwaWkjZlc6vFWapiegCm1UfHyr_-W5GnRuUM3vTBr2IwV1XCh_tis2blOcop0r-bS5yh_xUlOY2D1kky9FnJYo9ulg7qUuy7UUddEhqh75Y9d2ldCYrftOV0sJJ6apH2xiRDta-ORouXeq-hEPSyoHAYNTai&lib=MQ7hZHoz0BREMTQBuxLFtQILLX6lkgy_q';
 
 // Variáveis globais
 let cart = [];
@@ -70,7 +70,6 @@ function loadWines() {
                     <td colspan="7" class="error-message">
                         <i class="fas fa-exclamation-triangle"></i>
                         Não foi possível carregar os vinhos. Recarregue a página.
-                        <button onclick="location.reload()">Recarregar</button>
                     </td>
                 </tr>
             `;
@@ -288,7 +287,7 @@ function updateCart() {
                 <span class="item-unit-price">(${item.price.toLocaleString('pt-BR', { 
                     style: 'currency', 
                     currency: 'BRL' 
-                )} un)</span>
+                })} un)</span>
             </div>
         `;
         
@@ -462,4 +461,4 @@ document.addEventListener('keydown', function(event) {
             closeModal();
         }
     }
-});
+};
