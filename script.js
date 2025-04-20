@@ -1,6 +1,6 @@
 // Configurações
 const CONFIG = {
-  URL_API: 'https://script.google.com/macros/s/AKfycbzYOUR_NEW_SCRIPT_ID/exec', // USE SUA NOVA URL AQUI
+  URL_API: 'https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLhNqtfEvI9LxIsbKsh4SfIHjWuoo6Yot85xBJUpU8o7LLG7ftE2CcAWzuGv_sljL7Fa83ROv1-vudigrlWolZIG9U8HD874uJ9uh5AzG_PUr5A12qMcB1N-8VlEwGTcxvkigD0L6feTn0oYEyTm321B4ocj9S0x-wwBMAQDAupwwM0reDjtsyzWMAIFYVNQVowkAgu76P5J3_bSiig2ghfvso6kH6G82eK3Kv2w-XPdQG71A1byOygvoL7Q4GOYSqoOm0omZgswnXUhwbYRY5vw4wjEfA&lib=MnQYBkRsDbv4uLRxNoSIgA-aoJlzzZ8rm', // USE SUA NOVA URL AQUI
   WHATSAPP: '5546920001218'
 };
 
