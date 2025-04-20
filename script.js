@@ -113,6 +113,15 @@ async function init() {
         </td>
       </tr>
     `;
+    // Debug avançado - adicione no início da função carregarDados()
+console.log('Iniciando carregamento...');
+const testUrl = 'https://jsonplaceholder.typicode.com/todos/1';
+try {
+  const test = await fetch(testUrl);
+  console.log('Teste de conexão:', await test.json());
+} catch (e) {
+  console.error('Falha no teste de conexão:', e);
+}
   }
 }
 
