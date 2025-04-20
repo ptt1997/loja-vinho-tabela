@@ -3,48 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vinharia - Seu Site de Vinhos</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Vinharia Premium - Seus Vinhos Favoritos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1>Vinharia Premium</h1>
-        <div class="cart-icon" onclick="toggleCart()">
-            <i class="fas fa-shopping-cart"></i>
-            <span id="cart-count">0</span>
+        <div class="header-container">
+            <h1><i class="fas fa-wine-bottle"></i> Vinharia Premium</h1>
+            <div class="cart-icon" onclick="toggleCart()">
+                <i class="fas fa-shopping-cart"></i>
+                <span id="cart-count">0</span>
+            </div>
         </div>
     </header>
 
     <main>
-        <div class="wine-table-container">
-            <table id="wine-table">
-                <thead>
-                    <tr>
-                        <th>Imagem</th>
-                        <th>Nome</th>
-                        <th>Descrição</th>
-                        <th>Marca</th>
-                        <th>Preço</th>
-                        <th>Quantidade</th>
-                        <th>Ação</th>
-                    </tr>
-                </thead>
-                <tbody id="wine-table-body">
-                    <!-- Os dados serão carregados aqui via JavaScript -->
-                </tbody>
-            </table>
+        <div class="container">
+            <div class="wine-table-container">
+                <table id="wine-table">
+                    <thead>
+                        <tr>
+                            <th class="image-col">Imagem</th>
+                            <th>Nome do Vinho</th>
+                            <th>Descrição</th>
+                            <th>Marca</th>
+                            <th>Preço</th>
+                            <th class="quantity-col">Quantidade</th>
+                            <th class="action-col">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="wine-table-body">
+                        <!-- Os vinhos serão carregados aqui via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
 
-    <!-- Carrinho flutuante -->
+    <!-- Carrinho Flutuante -->
     <div class="floating-cart" id="floating-cart">
-        <!-- Conteúdo do carrinho -->
+        <div class="cart-header">
+            <h3><i class="fas fa-shopping-cart"></i> Seu Carrinho</h3>
+            <button class="close-cart" onclick="toggleCart()">&times;</button>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <div class="empty-cart-message">
+                <i class="fas fa-wine-bottle"></i>
+                <p>Seu carrinho está vazio</p>
+            </div>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cart-total">R$ 0,00</span>
+            </div>
+            <button class="checkout-btn" onclick="sendToWhatsApp()">
+                <i class="fab fa-whatsapp"></i> Finalizar Pedido
+            </button>
+        </div>
     </div>
 
-    <!-- Modal de imagem -->
+    <!-- Modal de Imagem -->
     <div class="image-modal" id="image-modal">
-        <!-- Conteúdo do modal -->
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modal-image">
     </div>
 
     <script src="script.js"></script>
