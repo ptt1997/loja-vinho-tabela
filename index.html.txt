@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Minha Loja de Vinhos</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Catálogo de Vinhos</h1>
+  
+  <!-- Container dos produtos -->
+  <div id="vinhos-container"></div>
+
+  <!-- Carrinho de compras -->
+  <div id="carrinho">
+    <h2>🛒 Carrinho</h2>
+    <div id="carrinho-container"></div>
+    <p id="total-pedido">Total: R$0.00</p>
+    <button onclick="finalizarPedido()">Finalizar Pedido (WhatsApp)</button>
+  </div>
+
+  <!-- Modal para imagens -->
+  <div id="imagem-modal" class="modal">
+    <span class="fechar-modal">&times;</span>
+    <img class="modal-conteudo" id="imagem-ampliada">
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

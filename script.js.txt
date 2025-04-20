@@ -1,0 +1,104 @@
+// Variáveis globais
+let carrinho = [];
+const numeroWhatsApp = '5546920001218'; // Substitua pelo seu número
+
+// Função para carregar vinhos do Google Sheets
+async function carregarVinhos() {
+  try {
+    const response = await fetch('SUA_URL_DO_APPS_SCRIPT_AQUI');
+    const vinhos = await response.json();
+    exibirVinhos(vinhos);
+  } catch (error) {
+    console.error("Erro ao carregar vinhos:", error);
+  }
+}
+
+// Função para exibir vinhos na página
+function exibirVinhos(vinhos) {
+  const container = document.getElementById('vinhos-container');
+  
+  vinhos.forEach(vinho => {
+    const card = document.createElement('div');
+    card.className = 'vinho-card';
+    card.innerHTML = `
+      <div class="icone-imagem" onclick="abrirImagem('${vinho['Link Imagem']}')">
+        📷 Clique para ver imagem
+      </div>
+      <h3>${vinho['Nome do Vinho']}</h3>
+      <p>${vinho['Descrição']}</p>
+      <p><strong>Preço:</strong> R$${vinho['Preço'].toFixed(2)}</p>
+      <input type="number" id="qtd-${vinho['Nome do Vinho']}" value="1" min="1">
+      <button onclick="adicionarAoCarrinho('${vinho['Nome do Vinho']}', ${vinho['Preço']}, 
+        document.getElementById('qtd-${vinho['Nome do Vinho']}').value)">
+        Adicionar ao Carrinho
+      </button>
+    `;
+    container.appendChild(card);
+  });
+}
+
+// Funções do carrinho (adicionar, remover, calcular total)
+function adicionarAoCarrinho(nome, preco, quantidade) {
+  quantidade = parseInt(quantidade);
+  const itemExistente = carrinho.find(item => item.nome === nome);
+  
+  if (itemExistente) {
+    itemExistente.quantidade += quantidade;
+  } else {
+    carrinho.push({ nome, preco, quantidade });
+  }
+  
+  atualizarCarrinho();
+}
+
+function atualizarCarrinho() {
+  const container = document.getElementById('carrinho-container');
+  container.innerHTML = '';
+  
+  carrinho.forEach(item => {
+    const div = document.createElement('div');
+    div.innerHTML = `
+      ${item.nome} - ${item.quantidade}x R$${(item.preco * item.quantidade).toFixed(2)}
+      <button onclick="removerItem('${item.nome}')">❌</button>
+    `;
+    container.appendChild(div);
+  });
+  
+  // Atualiza total
+  const total = carrinho.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
+  document.getElementById('total-pedido').textContent = `Total: R$${total.toFixed(2)}`;
+}
+
+function removerItem(nome) {
+  carrinho = carrinho.filter(item => item.nome !== nome);
+  atualizarCarrinho();
+}
+
+// Funções do modal de imagem
+function abrirImagem(url) {
+  const modal = document.getElementById('imagem-modal');
+  const img = document.getElementById('imagem-ampliada');
+  img.src = url;
+  modal.style.display = 'block';
+}
+
+document.querySelector('.fechar-modal').onclick = function() {
+  document.getElementById('imagem-modal').style.display = 'none';
+};
+
+// Finalizar pedido via WhatsApp
+function finalizarPedido() {
+  if (carrinho.length === 0) return alert("Carrinho vazio!");
+  
+  let mensagem = "*Pedido de Vinhos:*\n\n";
+  carrinho.forEach(item => {
+    mensagem += `- ${item.nome} (${item.quantidade}x): R$${(item.preco * item.quantidade).toFixed(2)}\n`;
+  });
+  
+  mensagem += `\n*Total: R$${carrinho.reduce((sum, item) => sum + (item.preco * item.quantidade), 0).toFixed(2)}*`;
+  
+  window.open(`https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`, '_blank');
+}
+
+// Inicia a loja
+carregarVinhos();
