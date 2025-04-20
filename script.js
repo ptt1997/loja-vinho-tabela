@@ -1,26 +1,57 @@
-// URL do seu Google Apps Script
-const SCRIPT_URL = 'https://script.google.com/macros/echo?user_content_key=AehSKLjvNkuZiLizqN-_wylFm5A4h_jZ6CAXA1R1XS9njQk5C9Kw5AuREIPNgv_KBHeXbmDTU5LRDTQlAOUnY5IzSXgNhzsvb875sVxU4ekh5DHjL6K2kEuCExO2KlBjbi8LwFafX7bzL-lBFgzle-APA4KWdfIdzj09o97Bc_jk32yGs73fwBh5pOFXd59TNMxYh0OKo9_IVv4F5SX2Phkly-DEqjGWuylOsBhW4Or3DDtP0jBXtWdl5BQFWxzElQ&lib=MQ7hZHoz0BREMTQBuxLFtQILLX6lkgy_q';
+// URL do seu Google Apps Script (substitua pelo seu URL real)
+const SCRIPT_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLj6hu1tQSKDYHg3PqG7BbI6dnvzbIr9u-1kak7pE4BqHue68ONXvEJIL7hzOxfRrNnhAV4inl3gfSUy69UzLsBlEeI_K7UgB6dAFI00pTa57rDReWspfWROLysXX1mcL36IenQ5sZ_zr0nnq1TtUCLc96ORP447r8IOCbwIspRtmL7xa3bk_t_UGgj5pc1DptlTJS5bKHjpyx1LDvwH98iCYMKWcjDzcu-SfJXt9C_uPV_bH6gI1mll5_pEN3GRaQMhtR_hIu5UHO2QBYD8s8P29I4spLcqulChu1Ic&lib=MQ7hZHoz0BREMTQBuxLFtQILLX6lkgy_q';
 
 // Variáveis globais
 let cart = [];
 let wines = [];
 
+// Funções para manipular cookies (solução para o erro de storage)
+function setCookie(nome, valor, dias) {
+    const data = new Date();
+    data.setTime(data.getTime() + (dias * 24 * 60 * 60 * 1000));
+    const expira = "expires=" + data.toUTCString();
+    document.cookie = nome + "=" + encodeURIComponent(valor) + ";" + expira + ";path=/;SameSite=Lax";
+}
+
+function getCookie(nome) {
+    const nomeCookie = nome + "=";
+    const cookies = document.cookie.split(';');
+    for(let i = 0; i < cookies.length; i++) {
+        let c = cookies[i];
+        while (c.charAt(0) === ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(nomeCookie) === 0) {
+            return decodeURIComponent(c.substring(nomeCookie.length, c.length));
+        }
+    }
+    return "";
+}
+
 // Quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', function() {
     loadWines();
     
-    // Verificar se há itens no carrinho no localStorage
-    const savedCart = localStorage.getItem('wineCart');
+    // Verificar cookies ao invés de localStorage
+    const savedCart = getCookie('wineCart');
     if (savedCart) {
-        cart = JSON.parse(savedCart);
-        updateCart();
+        try {
+            cart = JSON.parse(savedCart);
+            updateCart();
+        } catch (e) {
+            console.error("Erro ao ler carrinho:", e);
+            cart = [];
+        }
     }
 });
 
 // Carregar vinhos do Google Sheets
 function loadWines() {
     fetch(SCRIPT_URL)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) throw new Error("Erro na rede");
+            return response.json();
+        })
         .then(data => {
             wines = data;
             renderWineTable();
@@ -28,7 +59,7 @@ function loadWines() {
         .catch(error => {
             console.error('Erro ao carregar vinhos:', error);
             document.getElementById('wine-table-body').innerHTML = 
-                '<tr><td colspan="7" style="text-align: center;">Erro ao carregar os vinhos. Por favor, recarregue a página.</td></tr>';
+                '<tr><td colspan="7" class="error-message">Erro ao carregar os vinhos. Recarregue a página ou tente mais tarde.</td></tr>';
         });
 }
 
@@ -37,8 +68,8 @@ function renderWineTable() {
     const tableBody = document.getElementById('wine-table-body');
     tableBody.innerHTML = '';
 
-    if (wines.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Nenhum vinho encontrado.</td></tr>';
+    if (!wines || wines.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="7" class="empty-message">Nenhum vinho disponível no momento.</td></tr>';
         return;
     }
 
@@ -50,20 +81,20 @@ function renderWineTable() {
         if (wine['Link Imagem']) {
             const imgIcon = document.createElement('i');
             imgIcon.className = 'fas fa-camera wine-image';
-            imgIcon.style.cursor = 'pointer';
+            imgIcon.title = 'Ver imagem do vinho';
             imgIcon.onclick = () => openImageModal(wine['Link Imagem']);
             imgCell.appendChild(imgIcon);
         } else {
-            imgCell.textContent = '-';
+            imgCell.innerHTML = '<i class="fas fa-wine-bottle"></i>';
         }
         
         // Coluna Nome
         const nameCell = document.createElement('td');
-        nameCell.textContent = wine['Nome do Vinho'] || '-';
+        nameCell.textContent = wine['Nome do Vinho'] || 'Sem nome';
         
         // Coluna Descrição
         const descCell = document.createElement('td');
-        descCell.textContent = wine['Descrição'] || '-';
+        descCell.textContent = wine['Descrição'] || 'Descrição não disponível';
         
         // Coluna Marca
         const brandCell = document.createElement('td');
@@ -72,7 +103,10 @@ function renderWineTable() {
         // Coluna Preço
         const priceCell = document.createElement('td');
         const price = parseFloat(wine['Preço']) || 0;
-        priceCell.textContent = price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        priceCell.textContent = price.toLocaleString('pt-BR', { 
+            style: 'currency', 
+            currency: 'BRL' 
+        });
         
         // Coluna Quantidade
         const qtyCell = document.createElement('td');
@@ -81,19 +115,28 @@ function renderWineTable() {
         
         const minusBtn = document.createElement('button');
         minusBtn.className = 'quantity-btn';
-        minusBtn.innerHTML = '-';
-        minusBtn.onclick = () => adjustQuantity(minusBtn, -1);
+        minusBtn.innerHTML = '<i class="fas fa-minus"></i>';
+        minusBtn.onclick = (e) => {
+            e.preventDefault();
+            adjustQuantity(minusBtn, -1);
+        };
         
         const plusBtn = document.createElement('button');
         plusBtn.className = 'quantity-btn';
-        plusBtn.innerHTML = '+';
-        plusBtn.onclick = () => adjustQuantity(plusBtn, 1);
+        plusBtn.innerHTML = '<i class="fas fa-plus"></i>';
+        plusBtn.onclick = (e) => {
+            e.preventDefault();
+            adjustQuantity(plusBtn, 1);
+        };
         
         const qtyInput = document.createElement('input');
-        qtyInput.type = 'text';
+        qtyInput.type = 'number';
         qtyInput.className = 'quantity-input';
         qtyInput.value = '1';
         qtyInput.min = '1';
+        qtyInput.onchange = (e) => {
+            if (e.target.value < 1) e.target.value = 1;
+        };
         
         qtyControl.appendChild(minusBtn);
         qtyControl.appendChild(qtyInput);
@@ -104,8 +147,11 @@ function renderWineTable() {
         const actionCell = document.createElement('td');
         const addBtn = document.createElement('button');
         addBtn.className = 'add-to-cart-btn';
-        addBtn.textContent = 'Adicionar';
-        addBtn.onclick = () => addToCart(wine, parseInt(qtyInput.value));
+        addBtn.innerHTML = '<i class="fas fa-cart-plus"></i> Adicionar';
+        addBtn.onclick = (e) => {
+            e.preventDefault();
+            addToCart(wine, parseInt(qtyInput.value) || 1);
+        };
         actionCell.appendChild(addBtn);
         
         // Montar a linha
@@ -123,7 +169,7 @@ function renderWineTable() {
 
 // Ajustar quantidade
 function adjustQuantity(button, change) {
-    const qtyControl = button.parentElement;
+    const qtyControl = button.closest('.quantity-control');
     const input = qtyControl.querySelector('.quantity-input');
     let newValue = parseInt(input.value) + change;
     
@@ -134,6 +180,8 @@ function adjustQuantity(button, change) {
 
 // Adicionar ao carrinho
 function addToCart(wine, quantity) {
+    if (!wine || !quantity || quantity < 1) return;
+    
     // Verificar se o vinho já está no carrinho
     const existingItem = cart.find(item => item.id === wine['Nome do Vinho']);
     
@@ -157,8 +205,8 @@ function addToCart(wine, quantity) {
 
 // Atualizar carrinho
 function updateCart() {
-    // Salvar carrinho no localStorage
-    localStorage.setItem('wineCart', JSON.stringify(cart));
+    // Salvar carrinho em cookie (válido por 7 dias)
+    setCookie('wineCart', JSON.stringify(cart), 7);
     
     // Atualizar contador
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -168,7 +216,7 @@ function updateCart() {
     const cartItems = document.getElementById('cart-items');
     
     if (cart.length === 0) {
-        cartItems.innerHTML = '<p class="empty-cart-message">Seu carrinho está vazio</p>';
+        cartItems.innerHTML = '<p class="empty-cart-message"><i class="fas fa-wine-bottle"></i><br>Seu carrinho está vazio</p>';
         document.getElementById('cart-total').textContent = 'R$ 0,00';
         return;
     }
@@ -203,24 +251,37 @@ function updateCart() {
         
         const minusBtn = document.createElement('button');
         minusBtn.className = 'quantity-btn';
-        minusBtn.innerHTML = '-';
-        minusBtn.onclick = () => adjustCartItem(index, -1);
+        minusBtn.innerHTML = '<i class="fas fa-minus"></i>';
+        minusBtn.onclick = (e) => {
+            e.preventDefault();
+            adjustCartItem(index, -1);
+        };
         
         const plusBtn = document.createElement('button');
         plusBtn.className = 'quantity-btn';
-        plusBtn.innerHTML = '+';
-        plusBtn.onclick = () => adjustCartItem(index, 1);
+        plusBtn.innerHTML = '<i class="fas fa-plus"></i>';
+        plusBtn.onclick = (e) => {
+            e.preventDefault();
+            adjustCartItem(index, 1);
+        };
         
         const qtyInput = document.createElement('input');
-        qtyInput.type = 'text';
+        qtyInput.type = 'number';
         qtyInput.className = 'quantity-input';
         qtyInput.value = item.quantity;
-        qtyInput.onchange = (e) => updateCartItemQuantity(index, parseInt(e.target.value) || 1);
+        qtyInput.min = '1';
+        qtyInput.onchange = (e) => {
+            const newQty = parseInt(e.target.value) || 1;
+            updateCartItemQuantity(index, newQty);
+        };
         
-        const removeBtn = document.createElement('span');
+        const removeBtn = document.createElement('button');
         removeBtn.className = 'cart-item-remove';
         removeBtn.innerHTML = '<i class="fas fa-trash"></i>';
-        removeBtn.onclick = () => removeFromCart(index);
+        removeBtn.onclick = (e) => {
+            e.preventDefault();
+            removeFromCart(index);
+        };
         
         itemQty.appendChild(minusBtn);
         itemQty.appendChild(qtyInput);
@@ -269,15 +330,17 @@ function updateCartItemQuantity(index, newQuantity) {
 
 // Remover do carrinho
 function removeFromCart(index) {
-    cart.splice(index, 1);
-    updateCart();
+    if (index >= 0 && index < cart.length) {
+        cart.splice(index, 1);
+        updateCart();
+    }
 }
 
 // Mostrar notificação de item adicionado
 function showCartNotification() {
     const notification = document.createElement('div');
     notification.className = 'cart-notification';
-    notification.textContent = 'Item adicionado ao carrinho!';
+    notification.innerHTML = '<i class="fas fa-check-circle"></i> Item adicionado ao carrinho!';
     document.body.appendChild(notification);
     
     setTimeout(() => {
@@ -288,8 +351,8 @@ function showCartNotification() {
 
 // Alternar visibilidade do carrinho
 function toggleCart() {
-    const cart = document.getElementById('floating-cart');
-    cart.classList.toggle('active');
+    const cartElement = document.getElementById('floating-cart');
+    cartElement.classList.toggle('active');
 }
 
 // Abrir modal de imagem
@@ -297,8 +360,13 @@ function openImageModal(imageUrl) {
     const modal = document.getElementById('image-modal');
     const modalImg = document.getElementById('modal-image');
     
+    if (!imageUrl) {
+        modalImg.src = 'https://via.placeholder.com/600x400?text=Imagem+Indispon%C3%ADvel';
+    } else {
+        modalImg.src = imageUrl;
+    }
+    
     modal.style.display = 'block';
-    modalImg.src = imageUrl;
 }
 
 // Fechar modal de imagem
@@ -309,37 +377,45 @@ function closeModal() {
 // Enviar pedido para WhatsApp
 function sendToWhatsApp() {
     if (cart.length === 0) {
-        alert('Seu carrinho está vazio!');
+        alert('Seu carrinho está vazio! Adicione vinhos antes de finalizar.');
         return;
     }
     
     const phoneNumber = '5546920001218';
-    let message = 'Olá, gostaria de fazer o seguinte pedido:\n\n';
+    let message = '🍷 *Pedido de Vinhos* 🍷\n\n';
+    message += 'Olá, gostaria de fazer o seguinte pedido:\n\n';
     
-    cart.forEach(item => {
-        message += `- ${item.name} (${item.brand}): ${item.quantity} x ${item.price.toLocaleString('pt-BR', { 
+    cart.forEach((item, index) => {
+        message += `*${index + 1}. ${item.name}* (${item.brand})\n`;
+        message += `Quantidade: ${item.quantity}\n`;
+        message += `Preço unitário: ${item.price.toLocaleString('pt-BR', { 
             style: 'currency', 
             currency: 'BRL' 
         })}\n`;
+        message += `Subtotal: ${(item.price * item.quantity).toLocaleString('pt-BR', { 
+            style: 'currency', 
+            currency: 'BRL' 
+        })}\n\n`;
     });
     
     const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    message += `\n*Total: ${total.toLocaleString('pt-BR', { 
+    message += `*TOTAL: ${total.toLocaleString('pt-BR', { 
         style: 'currency', 
         currency: 'BRL' 
-    })}*`;
+    })}*\n\n`;
     
-    message += '\n\nPor favor, confirme o pedido. Obrigado!';
+    message += 'Por favor, confirme o pedido. Obrigado! 🍇';
     
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
     
+    // Abrir em nova aba
     window.open(whatsappUrl, '_blank');
     
-    // Limpar carrinho após envio
-    cart = [];
-    updateCart();
-    toggleCart();
+    // Limpar carrinho após envio (opcional)
+    // cart = [];
+    // updateCart();
+    // toggleCart();
 }
 
 // Fechar modal ao clicar fora da imagem
@@ -349,3 +425,15 @@ window.onclick = function(event) {
         closeModal();
     }
 };
+
+// Fechar carrinho ao pressionar Esc
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        const cartElement = document.getElementById('floating-cart');
+        if (cartElement.classList.contains('active')) {
+            toggleCart();
+        } else {
+            closeModal();
+        }
+    }
+});
